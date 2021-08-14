@@ -13,6 +13,10 @@
 #	CFLAGS appears in the Makefile, without having to permenetly
 #	change the makefile! (If still confused, look at debug and release)
 #	targets already made
+#Please look at the release and debug targets, and modify them
+#	as needed
+
+#BE CAREFUL WITH UNINTENDED SPACES! YOU'VE BEEN WARNED
 
 #FIELDS OK TO MODIFY
 EXEC = a.out
@@ -20,13 +24,15 @@ DEPSDIR = deps
 OBJSDIR = build
 HDRSDIR = $(shell pwd)
 CC = g++
-CFLAGS = -ansi -std=c++11 -Wall -Wpedantic -g -I $(HDRSDIR)
-LFLAGS = -ansi -std=c++11 -Wall -Wpedantic -g
+CFLAGS = -ansi -std=c++11 -Wall -Wpedantic -I $(HDRSDIR)
+LFLAGS = -ansi -std=c++11 -Wall -Wpedantic
 #DONT USE ".", use $(shell pwd) to get an 
 #absolute path to current directory
 #else, just the name of the directory in
 #the current directory, such as srcs
 SRCSDIR = $(shell pwd)
+#remember not to add extra space!!!!
+#ex. = .cpp WRONG! =.cpp RIGHT!!
 SRC_FILE_EXTENSION =.cpp
 
 
@@ -69,15 +75,17 @@ clean:
 #will always do its thang first, even before an explicitly
 #called target such as release
 release:
-	make CFLAGS="-ansi -std=c99 -Wall -Wpedantic -O2 -I $(HDRSDIR)" \
-	LFLAGS="-ansi -std=c99 -Wall -Wpedantic -O2" \
-	DEPSDIR=$@_$(DEPSDIR) OBJSDIR=$@_$(OBJSDIR) \
+	make CFLAGS="$(CFLAGS) -O2" \
+	LFLAGS="-$(LFLAGS) -O2" \
+	DEPSDIR=$@_$(DEPSDIR) \
+	OBJSDIR=$@_$(OBJSDIR) \
 	EXEC=$@_$(EXEC)
 
 debug:
-	make CFLAGS="-ansi -std=c99 -Wall -Wpedantic -O0 -g -I $(HDRSDIR)" \
-	LFLAGS="-ansi -std=c99 -Wall -Wpedantic -O0 -g" \
-	DEPSDIR=$@_$(DEPSDIR) OBJSDIR=$@_$(OBJSDIR) \
+	make CFLAGS="$(CFLAGS) -O0 -g" \
+	LFLAGS="$(LFLAGS) -O0 -g" \
+	DEPSDIR=$@_$(DEPSDIR) \
+	OBJSDIR=$@_$(OBJSDIR) \
 	EXEC=$@_$(EXEC)
 
 include $(DEPS) #first "rule" to be run no matter what
