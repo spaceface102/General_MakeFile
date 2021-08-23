@@ -49,13 +49,16 @@ PY_DEPARGS = $@ "$(CC) $< $(CFLAGS) -c -o $(TARGET)"
 PY_DEPMAKER_SCRIPT = make_depfiles.py
 
 
-.PHONY: clean all release debug
+.PHONY: clean all release debug run
 
 all: $(EXEC)
 
 #this does the linking
 $(EXEC): $(OBJS)
 	$(CC) $^ $(LFLAGS) -o $@
+
+run:
+	./$(EXEC)
 
 $(DEPSDIR)/%.d: $(SRCSDIR)/%$(SRC_FILE_EXTENSION) $(PY_DEPMAKER_SCRIPT)
 	@mkdir -p $(DEPSDIR)
