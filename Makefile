@@ -57,7 +57,7 @@ all: $(EXEC)
 $(EXEC): $(OBJS)
 	$(CC) $^ $(LFLAGS) -o $@
 
-run:
+run: $(EXEC)
 	./$(EXEC)
 
 $(DEPSDIR)/%.d: $(SRCSDIR)/%$(SRC_FILE_EXTENSION) $(PY_DEPMAKER_SCRIPT)
