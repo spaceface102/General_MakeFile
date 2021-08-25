@@ -78,7 +78,7 @@ clean:
 #will always do its thang first, even before an explicitly
 #called target such as release
 release:
-	make CFLAGS="$(CFLAGS) -O2" \
+	make CFLAGS="$(CFLAGS) -O2 -DNDEBUG" \
 	LFLAGS="-$(LFLAGS) -O2" \
 	DEPSDIR=$@_$(DEPSDIR) \
 	OBJSDIR=$@_$(OBJSDIR) \
