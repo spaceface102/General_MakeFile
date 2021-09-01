@@ -31,9 +31,12 @@ LFLAGS = -ansi -std=c++11 -Wall -Wpedantic
 #else, just the name of the directory in
 #the current directory, such as srcs
 SRCSDIR = $(shell pwd)
-#remember not to add extra space!!!!
-#ex. = .cpp WRONG! =.cpp RIGHT!!
-SRC_FILE_EXTENSION =.cpp
+SRC_FILE_EXTENSION = .cpp
+#suggest multipling logical cores by 1.25 
+#if hyperthreading system, this is used
+#for making release and debug build, set
+#to 1 if having weird issues
+NUMBERS_OF_SYSTEM_CORES = 6
 
 
 #FIELDS RARELY MODIFIED
@@ -78,14 +81,16 @@ clean:
 #will always do its thang first, even before an explicitly
 #called target such as release
 release:
-	make CFLAGS="$(CFLAGS) -O2 -DNDEBUG" \
+	make -j$(NUMBERS_OF_SYSTEM_CORES) \
+	CFLAGS="$(CFLAGS) -O2 -DNDEBUG" \
 	LFLAGS="-$(LFLAGS) -O2" \
 	DEPSDIR=$@_$(DEPSDIR) \
 	OBJSDIR=$@_$(OBJSDIR) \
 	EXEC=$@_$(EXEC)
 
 debug:
-	make CFLAGS="$(CFLAGS) -O0 -g" \
+	make -j$(NUMBERS_OF_SYSTEM_CORES) \
+	CFLAGS="$(CFLAGS) -O0 -g" \
 	LFLAGS="$(LFLAGS) -O0 -g" \
 	DEPSDIR=$@_$(DEPSDIR) \
 	OBJSDIR=$@_$(OBJSDIR) \
