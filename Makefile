@@ -52,7 +52,7 @@ PY_DEPARGS = $@ "$(CC) $< $(CFLAGS) -c -o $(TARGET)"
 PY_DEPMAKER_SCRIPT = make_depfiles.py
 
 
-.PHONY: clean all release debug run
+.PHONY: clean all release debug run leak_test
 
 all: $(EXEC)
 
@@ -62,6 +62,9 @@ $(EXEC): $(OBJS)
 
 run: $(EXEC)
 	./$(EXEC)
+
+leak_test: $(EXEC)
+	valgrind ./$(EXEC)
 
 $(DEPSDIR)/%.d: $(SRCSDIR)/%$(SRC_FILE_EXTENSION) $(PY_DEPMAKER_SCRIPT)
 	@mkdir -p $(DEPSDIR)
