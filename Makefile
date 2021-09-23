@@ -24,7 +24,7 @@ DEPSDIR = deps
 OBJSDIR = build
 HDRSDIR = $(shell pwd)
 CC = g++
-CFLAGS = -ansi -std=c++11 -Wall -Wpedantic -I $(HDRSDIR)
+CFLAGS = -ansi -std=c++11 -Wall -Wpedantic -Wshadow -I $(HDRSDIR)
 LFLAGS = -ansi -std=c++11 -Wall -Wpedantic
 #DONT USE ".", use $(shell pwd) to get an 
 #absolute path to current directory
@@ -52,7 +52,7 @@ PY_DEPARGS = $@ "$(CC) $< $(CFLAGS) -c -o $(TARGET)"
 PY_DEPMAKER_SCRIPT = make_depfiles.py
 
 
-.PHONY: clean all release debug run leak_test
+.PHONY: clean all release debug run leak_check
 
 all: $(EXEC)
 
@@ -62,9 +62,6 @@ $(EXEC): $(OBJS)
 
 run: $(EXEC)
 	./$(EXEC)
-
-leak_test: $(EXEC)
-	valgrind ./$(EXEC)
 
 $(DEPSDIR)/%.d: $(SRCSDIR)/%$(SRC_FILE_EXTENSION) $(PY_DEPMAKER_SCRIPT)
 	@mkdir -p $(DEPSDIR)
@@ -93,11 +90,24 @@ release:
 
 debug:
 	make -j$(NUMBERS_OF_SYSTEM_CORES) \
-	CFLAGS="$(CFLAGS) -O0 -g" \
+	CFLAGS="$(CFLAGS) -Og -ggdb " \
 	LFLAGS="$(LFLAGS) -O0 -g" \
 	DEPSDIR=$@_$(DEPSDIR) \
 	OBJSDIR=$@_$(OBJSDIR) \
 	EXEC=$@_$(EXEC)
+	clear -x
+	gdb ./$@_$(EXEC)
+
+leak_check:
+	@#https://github.com/google/sanitizers/wiki/AddressSanitizer
+	make -j$(NUMBERS_OF_SYSTEM_CORES) \
+	CFLAGS="$(CFLAGS) -ggdb -O2 -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer" \
+	LFLAGS="$(LFLAGS) -ggdb -O2 -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer" \
+	DEPSDIR=$@_$(DEPSDIR) \
+	OBJSDIR=$@_$(OBJSDIR) \
+	EXEC=$@_$(EXEC)
+	clear -x
+	./$@_$(EXEC)
 
 include $(DEPS) #first "rule" to be run no matter what
 
