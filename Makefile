@@ -52,7 +52,7 @@ PY_DEPARGS = $@ "$(CC) $< $(CFLAGS) -c -o $(TARGET)"
 PY_DEPMAKER_SCRIPT = make_depfiles.py
 
 
-.PHONY: clean all release debug run leak_check
+.PHONY: clean all release debug run leak_check profile visual_profile
 
 all: $(EXEC)
 
@@ -74,6 +74,8 @@ clean:
 	rm -f -r *$(OBJSDIR)
 	rm -f -r *$(DEPSDIR)
 	rm -f *$(EXEC)
+	@rm -f gmon.out #profiling tool file (gprof)
+	@rm -f visual_profile.png #output of the visual_profile
 
 #I do a "recursive call" of make to get arround the issue of
 #include $(DEPS) building the deps even before a target such
@@ -95,6 +97,7 @@ debug:
 	DEPSDIR=$@_$(DEPSDIR) \
 	OBJSDIR=$@_$(OBJSDIR) \
 	EXEC=$@_$(EXEC)
+
 	clear -x
 	gdb ./$@_$(EXEC)
 
@@ -106,8 +109,37 @@ leak_check:
 	DEPSDIR=$@_$(DEPSDIR) \
 	OBJSDIR=$@_$(OBJSDIR) \
 	EXEC=$@_$(EXEC)
+
 	clear -x
 	./$@_$(EXEC)
+
+profile:
+	@#https://blog.mbedded.ninja/programming/compilers/gcc/gcc-profiling/
+	make -j$(NUMBERS_OF_SYSTEM_CORES) \
+	CFLAGS="$(CFLAGS) -O2 -DNDEBUG -pg" \
+	LFLAGS="-$(LFLAGS) -O2 -pg" \
+	DEPSDIR=$@_$(DEPSDIR) \
+	OBJSDIR=$@_$(OBJSDIR) \
+	EXEC=$@_$(EXEC)
+
+	clear -x
+	./$@_$(EXEC)
+	gprof ./$@_$(EXEC) | less
+
+visual_profile:
+	@#https://blog.mbedded.ninja/programming/compilers/gcc/gcc-profiling/
+	@#https://awesomeopensource.com/project/jrfonseca/gprof2dot
+	make -j$(NUMBERS_OF_SYSTEM_CORES) \
+	CFLAGS="$(CFLAGS) -O2 -DNDEBUG -pg" \
+	LFLAGS="-$(LFLAGS) -O2 -pg" \
+	DEPSDIR=$@_$(DEPSDIR) \
+	OBJSDIR=$@_$(OBJSDIR) \
+	EXEC=$@_$(EXEC)
+
+	clear -x
+	./$@_$(EXEC)
+	gprof ./$@_$(EXEC) | gprof2dot | dot -Tpng -o $@.png
+	xdg-open $@.png
 
 include $(DEPS) #first "rule" to be run no matter what
 
