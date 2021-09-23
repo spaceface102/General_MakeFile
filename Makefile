@@ -24,7 +24,7 @@ DEPSDIR = deps
 OBJSDIR = build
 HDRSDIR = $(shell pwd)
 CC = g++
-CFLAGS = -ansi -std=c++11 -Wall -Wpedantic -Wshadow -I $(HDRSDIR)
+CFLAGS = -ansi -std=c++11 -Wall -Wpedantic -Wshadow-compatible-local -I $(HDRSDIR)
 LFLAGS = -ansi -std=c++11 -Wall -Wpedantic
 #DONT USE ".", use $(shell pwd) to get an 
 #absolute path to current directory
