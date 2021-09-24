@@ -149,7 +149,8 @@ visual_profile:
 
 update_make:
 	@#https://askubuntu.com/questions/912545/how-to-retrive-a-single-file-from-github-using-git
-	wget https://raw.githubusercontent.com/spaceface102/General_MakeFile/master/Makefile -O Makefile
+	@wget https://raw.githubusercontent.com/spaceface102/General_MakeFile/master/Makefile -O Makefile
+	#Updated Makefile from my github!
 
 include $(DEPS) #first "rule" to be run no matter what
 
