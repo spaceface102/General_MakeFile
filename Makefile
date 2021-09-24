@@ -24,23 +24,31 @@ DEPSDIR = deps
 OBJSDIR = build
 HDRSDIR = $(shell pwd)
 CC = g++
-CFLAGS = -ansi -std=c++11 -Werror -Wall -Wpedantic -Wshadow-compatible-local -I $(HDRSDIR)
+
 #have core_lflags and extra_lflags to make it easier to add extra_flags
+CFLAGS = -ansi -std=c++11 -Werror -Wall -Wpedantic -Wshadow-compatible-local -I $(HDRSDIR)
 CORE_LFLAGS = -ansi -std=c++11 -Werror -Wall -Wpedantic -Wshadow-compatible-local
 EXTRA_LFLAGS =
 #probably won't need to modify this too often
 LFLAGS = $(CORE_LFLAGS) $(EXTRA_LFLAGS)
+
 #DONT USE ".", use $(shell pwd) to get an 
 #absolute path to current directory
 #else, just the name of the directory in
 #the current directory, such as srcs
 SRCSDIR = $(shell pwd)
+
 SRC_FILE_EXTENSION = .cpp
+
 #suggest multipling logical cores by 1.25 
 #if hyperthreading system, this is used
 #for making release and debug build, set
 #to 1 if having weird issues
 NUMBERS_OF_SYSTEM_CORES = 6
+
+#name of the make file (used for update_make paired with make script)
+SELF = Makefile 
+
 
 
 #FIELDS RARELY MODIFIED
@@ -149,7 +157,7 @@ visual_profile:
 
 update_make:
 	@#https://askubuntu.com/questions/912545/how-to-retrive-a-single-file-from-github-using-git
-	@wget https://raw.githubusercontent.com/spaceface102/General_MakeFile/master/Makefile -O Makefile
+	@wget https://raw.githubusercontent.com/spaceface102/General_MakeFile/master/Makefile -O $(SELF) 
 	#Updated Makefile from my github!
 
 include $(DEPS) #first "rule" to be run no matter what
