@@ -148,8 +148,8 @@ visual_profile:
 
 
 update_make:
-	#make a better version that pulls from github repo!!!!!
-	cp ~/Documents/General_MakeFile/Makefile .
+	@#https://askubuntu.com/questions/912545/how-to-retrive-a-single-file-from-github-using-git
+	wget https://raw.githubusercontent.com/spaceface102/General_MakeFile/master/Makefile -O Makefile
 
 include $(DEPS) #first "rule" to be run no matter what
 
