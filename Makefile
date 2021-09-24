@@ -51,7 +51,7 @@ SELF = Makefile
 
 
 
-#FIELDS RARELY MODIFIED
+#CORE FIELDS RARELY MODIFIED
 SRCS = $(patsubst $(SRCSDIR)/%$(SRC_FILE_EXTENSION), %$(SRC_FILE_EXTENSION), $(wildcard $(SRCSDIR)/*$(SRC_FILE_EXTENSION)))
 OBJS = $(patsubst %$(SRC_FILE_EXTENSION), $(OBJSDIR)/%.o, $(SRCS))
 DEPS = $(patsubst %$(SRC_FILE_EXTENSION), $(DEPSDIR)/%.d, $(SRCS))
@@ -63,8 +63,11 @@ DEPFLAGS = -MM -MP -MF $@ -MT $(TARGET) -I $(HDRSDIR)
 PY_DEPARGS = $@ "$(CC) $< $(CFLAGS) -c -o $(TARGET)"
 PY_DEPMAKER_SCRIPT = dont_remove_make_depfiles.py
 
+#EXTRA (RARELY MODIFED)
+#name of the script that is running the Makefile indirectly (look at the make_script file)
+MAKE_SCRIPT_NAME = make
 
-.PHONY: clean all release debug run leak_check profile visual_profile update_make
+.PHONY: clean all release debug run leak_check profile visual_profile update_make update_script
 
 all: $(EXEC)
 
@@ -157,8 +160,12 @@ visual_profile:
 
 update_make:
 	@#https://askubuntu.com/questions/912545/how-to-retrive-a-single-file-from-github-using-git
-	@wget https://raw.githubusercontent.com/spaceface102/General_MakeFile/master/Makefile -O $(SELF) 
+	wget https://raw.githubusercontent.com/spaceface102/General_MakeFile/master/Makefile -O $(SELF) 
 	#Updated Makefile from my github!
+
+update_script:
+	wget https://raw.githubusercontent.com/spaceface102/General_MakeFile/master/make -O $(MAKE_SCRIPT_NAME) 
+	#updated $(MAKE_SCRIPT_NAME) script from my github!
 
 include $(DEPS) #first "rule" to be run no matter what
 
@@ -249,3 +256,6 @@ $(PY_DEPMAKER_SCRIPT):
 #	a little bit to forexample build/<filename>.o will cause it to NOT automatically
 #	compile. That is why I ended making a custom python3 script to explicity insert
 #	the compiling step
+
+
+#This make file was made by Osbaldo Gonzalez Jr.(spaceface102)
