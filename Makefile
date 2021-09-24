@@ -24,8 +24,12 @@ DEPSDIR = deps
 OBJSDIR = build
 HDRSDIR = $(shell pwd)
 CC = g++
-CFLAGS = -ansi -std=c++11 -Wall -Wpedantic -Wshadow-compatible-local -I $(HDRSDIR)
-LFLAGS = -ansi -std=c++11 -Wall -Wpedantic
+CFLAGS = -ansi -std=c++11 -Werror -Wall -Wpedantic -Wshadow-compatible-local -I $(HDRSDIR)
+#have core_lflags and extra_lflags to make it easier to add extra_flags
+CORE_LFLAGS = -ansi -std=c++11 -Werror -Wall -Wpedantic -Wshadow-compatible-local
+EXTRA_LFLAGS =
+#probably won't need to modify this too often
+LFLAGS = $(CORE_LFLAGS) $(EXTRA_LFLAGS)
 #DONT USE ".", use $(shell pwd) to get an 
 #absolute path to current directory
 #else, just the name of the directory in
@@ -49,10 +53,10 @@ DEPS = $(patsubst %$(SRC_FILE_EXTENSION), $(DEPSDIR)/%.d, $(SRCS))
 TARGET = $(patsubst $(SRCSDIR)/%$(SRC_FILE_EXTENSION), $(OBJSDIR)/%.o, $<)
 DEPFLAGS = -MM -MP -MF $@ -MT $(TARGET) -I $(HDRSDIR)
 PY_DEPARGS = $@ "$(CC) $< $(CFLAGS) -c -o $(TARGET)"
-PY_DEPMAKER_SCRIPT = make_depfiles.py
+PY_DEPMAKER_SCRIPT = dont_remove_make_depfiles.py
 
 
-.PHONY: clean all release debug run leak_check profile visual_profile
+.PHONY: clean all release debug run leak_check profile visual_profile update_make
 
 all: $(EXEC)
 
@@ -61,6 +65,7 @@ $(EXEC): $(OBJS)
 	$(CC) $^ $(LFLAGS) -o $@
 
 run: $(EXEC)
+	clear -x
 	./$(EXEC)
 
 $(DEPSDIR)/%.d: $(SRCSDIR)/%$(SRC_FILE_EXTENSION) $(PY_DEPMAKER_SCRIPT)
@@ -140,6 +145,11 @@ visual_profile:
 	./$@_$(EXEC)
 	gprof ./$@_$(EXEC) | gprof2dot | dot -Tpng -o $@.png
 	xdg-open $@.png
+
+
+update_make:
+	#make a better version that pulls from github repo!!!!!
+	cp ~/Documents/General_MakeFile/Makefile .
 
 include $(DEPS) #first "rule" to be run no matter what
 

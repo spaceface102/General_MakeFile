@@ -1,0 +1,27 @@
+#!/usr/bin/bash
+
+#the reason to do this is so my directories don't
+#get bloated by having a huge makefile every single time
+#I want to compile anything, and also
+#whenever going inside a project, I know that I will
+#be using the same core Makefile from MAKEFILE_DIR
+#and therefore projects can be more uniform
+
+#basic steps to use in a git repo
+#1. Copy the General Makefile to the repo (base directory)
+#2. Copy this file to anywhere you want to a compile a project
+#	i. make sure you have a relative path to the Makefile
+#	from the building directory (do this to be able to
+#	clone the repo to another system and not have to modify
+#	anything)
+#3. ./make
+#4 profit!
+#	i. ofcourse you can use ./make clean or ./make -j6
+
+#NOTE: if SRCSDIR or HDRSDIR is just the current directory
+#use SRCSDIR=$(pwd) or HDRSDIR=$(pwd) 
+
+MAKEFILE_DIR=~/Documents/General_MakeFile
+cp $MAKEFILE_DIR/Makefile .
+make $1 $2 SRCSDIR=srcs HDRSDIR=hdrs EXTRA_LFLAGS=""
+rm -f Makefile
