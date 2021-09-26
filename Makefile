@@ -5,14 +5,6 @@
 #To set the location of either the deps, objs, hdrs, or srcs
 #	to the current directory DON'T USE ".", instead use
 #	$(shell pwd). Else, any other directory name is fine
-#In order to make a specific building target that has different
-#	input for the makefile variables/fields, make a .PHONY target
-#	that calls make (basically making a recursive vall to make)
-#	with modified variables:
-#	ex. make CFLAGS=-Ofast will make the changes everywhere that
-#	CFLAGS appears in the Makefile, without having to permenetly
-#	change the makefile! (If still confused, look at debug and release)
-#	targets already made
 #Please look at the release and debug targets, and modify them
 #	as needed
 
@@ -40,14 +32,15 @@ SRCSDIR = $(shell pwd)
 
 SRC_FILE_EXTENSION = .cpp
 
-#suggest multipling logical cores by 1.25 
+#suggest multipling physical cores by 1.25 
 #if hyperthreading system, this is used
 #for making release and debug build, set
 #to 1 if having weird issues
 NUMBERS_OF_SYSTEM_CORES = 6
 
-#name of the make file (used for update_make paired with make script)
-SELF = Makefile 
+#name of the make file (used for update_make target
+#paired with make script)
+CENTRAL_MAKEFILE_DIR =$(shell pwd)
 
 
 
@@ -62,10 +55,6 @@ TARGET = $(patsubst $(SRCSDIR)/%$(SRC_FILE_EXTENSION), $(OBJSDIR)/%.o, $<)
 DEPFLAGS = -MM -MP -MF $@ -MT $(TARGET) -I $(HDRSDIR)
 PY_DEPARGS = $@ "$(CC) $< $(CFLAGS) -c -o $(TARGET)"
 PY_DEPMAKER_SCRIPT = dont_remove_make_depfiles.py
-
-#EXTRA (RARELY MODIFED)
-#name of the script that is running the Makefile indirectly (look at the make_script file)
-MAKE_SCRIPT_NAME = make
 
 .PHONY: clean all release debug run leak_check profile visual_profile update_make update_script
 
@@ -160,11 +149,11 @@ visual_profile:
 
 update_make:
 	@#https://askubuntu.com/questions/912545/how-to-retrive-a-single-file-from-github-using-git
-	wget https://raw.githubusercontent.com/spaceface102/General_MakeFile/master/Makefile -O $(SELF) 
+	wget https://raw.githubusercontent.com/spaceface102/General_MakeFile/master/Makefile -O $(CENTRAL_MAKEFILE_DIR)/Makefile 
 	#Updated Makefile from my github!
 
 update_script:
-	wget https://raw.githubusercontent.com/spaceface102/General_MakeFile/master/make -O $(MAKE_SCRIPT_NAME) 
+	wget https://raw.githubusercontent.com/spaceface102/General_MakeFile/master/make -O make 
 	#updated $(MAKE_SCRIPT_NAME) script from my github!
 
 include $(DEPS) #first "rule" to be run no matter what
