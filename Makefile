@@ -18,11 +18,11 @@ HDRSDIR = $(shell pwd)
 CC = g++
 
 #have core_lflags and extra_lflags to make it easier to add extra_flags
-CFLAGS = -ansi -std=c++11 -Werror -Wall -Wpedantic -Wshadow-compatible-local -I $(HDRSDIR)
-CORE_LFLAGS = -ansi -std=c++11 -Werror -Wall -Wpedantic -Wshadow-compatible-local
+SHARED_C_AND_L_FLAGS = -std=c++11 -Werror -Wall -Wpedantic -Wshadow-compatible-local -fsanitize-address-use-after-scope
+CORE_CFLAGS = $(SHARED_C_AND_L_FLAGS) -I $(HDRSDIR)
+CORE_LFLAGS = $(SHARED_C_AND_L_FLAGS)
+EXTRA_CFLAGS =
 EXTRA_LFLAGS =
-#probably won't need to modify this too often
-LFLAGS = $(CORE_LFLAGS) $(EXTRA_LFLAGS)
 
 #DONT USE ".", use $(shell pwd) to get an 
 #absolute path to current directory
@@ -45,6 +45,8 @@ CENTRAL_MAKEFILE_DIR =$(shell pwd)
 
 
 #CORE FIELDS RARELY MODIFIED
+LFLAGS = $(CORE_LFLAGS) $(EXTRA_LFLAGS)
+CFLAGS = $(CORE_LFLAGS) $(EXTRA_LFLAGS)
 SRCS = $(patsubst $(SRCSDIR)/%$(SRC_FILE_EXTENSION), %$(SRC_FILE_EXTENSION), $(wildcard $(SRCSDIR)/*$(SRC_FILE_EXTENSION)))
 OBJS = $(patsubst %$(SRC_FILE_EXTENSION), $(OBJSDIR)/%.o, $(SRCS))
 DEPS = $(patsubst %$(SRC_FILE_EXTENSION), $(DEPSDIR)/%.d, $(SRCS))
@@ -154,7 +156,7 @@ update_make:
 
 update_script:
 	wget https://raw.githubusercontent.com/spaceface102/General_MakeFile/master/make -O make 
-	#updated $(MAKE_SCRIPT_NAME) script from my github!
+	#updated make script from my github!
 
 include $(DEPS) #first "rule" to be run no matter what
 
