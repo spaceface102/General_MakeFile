@@ -1,3 +1,5 @@
+#This make file was made by Osbaldo Gonzalez Jr.(spaceface102)
+
 #HOW TO USE THIS MAKEFILE
 #Try to ONLY modify the variables that have been marked as
 #	ok to modify. Be carefule of modifiying any fields
@@ -7,7 +9,6 @@
 #	$(shell pwd). Else, any other directory name is fine
 #Please look at the release and debug targets, and modify them
 #	as needed
-
 #BE CAREFUL WITH UNINTENDED SPACES! YOU'VE BEEN WARNED
 
 #FIELDS OK TO MODIFY
@@ -15,7 +16,16 @@ EXEC = a.out
 DEPSDIR = deps
 OBJSDIR = build
 HDRSDIR = $(shell pwd)
+SRCSDIR = $(shell pwd)
+SRC_FILE_EXTENSION = .cpp
+NUMBERS_OF_SYSTEM_CORES = 6
 CC = g++
+
+#location of the central Makefile used by
+#the make scriot. This is necessarry to be
+#able to update the central makefile from the
+#the script
+CENTRAL_MAKEFILE_DIR =$(shell pwd)
 
 #have core_lflags and extra_lflags to make it easier to add extra_flags
 SHARED_C_AND_L_FLAGS = -std=c++11 -Werror -Wall -Wpedantic -Wshadow-compatible-local -fsanitize-address-use-after-scope
@@ -23,25 +33,6 @@ CORE_CFLAGS = $(SHARED_C_AND_L_FLAGS) -I $(HDRSDIR)
 CORE_LFLAGS = $(SHARED_C_AND_L_FLAGS)
 EXTRA_CFLAGS =
 EXTRA_LFLAGS =
-
-#DONT USE ".", use $(shell pwd) to get an 
-#absolute path to current directory
-#else, just the name of the directory in
-#the current directory, such as srcs
-SRCSDIR = $(shell pwd)
-
-SRC_FILE_EXTENSION = .cpp
-
-#suggest multipling physical cores by 1.25 
-#if hyperthreading system, this is used
-#for making release and debug build, set
-#to 1 if having weird issues
-NUMBERS_OF_SYSTEM_CORES = 6
-
-#name of the make file (used for update_make target
-#paired with make script)
-CENTRAL_MAKEFILE_DIR =$(shell pwd)
-
 
 
 #CORE FIELDS RARELY MODIFIED
@@ -56,7 +47,10 @@ DEPS = $(patsubst %$(SRC_FILE_EXTENSION), $(DEPSDIR)/%.d, $(SRCS))
 TARGET = $(patsubst $(SRCSDIR)/%$(SRC_FILE_EXTENSION), $(OBJSDIR)/%.o, $<)
 DEPFLAGS = -MM -MP -MF $@ -MT $(TARGET) -I $(HDRSDIR)
 PY_DEPARGS = $@ "$(CC) $< $(CFLAGS) -c -o $(TARGET)"
-PY_DEPMAKER_SCRIPT = dont_remove_make_depfiles.py
+PY_DEPMAKER_SCRIPT = dont_remove_this_script_makes_depfiles.py
+
+
+
 
 .PHONY: clean all release debug run leak_check profile visual_profile update_make update_script
 
@@ -66,16 +60,18 @@ all: $(EXEC)
 $(EXEC): $(OBJS)
 	$(CC) $^ $(LFLAGS) -o $@
 
-run: $(EXEC)
-	clear -x
-	./$(EXEC)
-
 $(DEPSDIR)/%.d: $(SRCSDIR)/%$(SRC_FILE_EXTENSION) $(PY_DEPMAKER_SCRIPT)
 	@mkdir -p $(DEPSDIR)
 	@mkdir -p $(OBJSDIR)
 	#making $@
 	@$(CC) $(DEPFLAGS) $<
 	@./$(PY_DEPMAKER_SCRIPT) $(PY_DEPARGS)
+
+
+
+run: $(EXEC)
+	clear -x
+	./$(EXEC)
 
 clean:
 	rm -f -r *$(OBJSDIR)
@@ -84,11 +80,6 @@ clean:
 	@rm -f gmon.out #profiling tool file (gprof)
 	@rm -f visual_profile.png #output of the visual_profile
 
-#I do a "recursive call" of make to get arround the issue of
-#include $(DEPS) building the deps even before a target such
-#as release changes for example the CFLAGS. Remember, include
-#will always do its thang first, even before an explicitly
-#called target such as release
 release:
 	make -j$(NUMBERS_OF_SYSTEM_CORES) \
 	CFLAGS="$(CFLAGS) -O2 -DNDEBUG" \
@@ -158,7 +149,12 @@ update_script:
 	wget https://raw.githubusercontent.com/spaceface102/General_MakeFile/master/make -O make 
 	#updated make script from my github!
 
-include $(DEPS) #first "rule" to be run no matter what
+#WILL ALWAYS RUN FIRST! EVEN BEFORE "all" TARGET
+#OR ANY OTHER EXPLICIT TARGET
+include $(DEPS)
+
+
+
 
 #this writes out the whole python script if it doesn't
 #already exist. ITS UGLY BUT IT WORKS! Just run the make
@@ -247,6 +243,3 @@ $(PY_DEPMAKER_SCRIPT):
 #	a little bit to forexample build/<filename>.o will cause it to NOT automatically
 #	compile. That is why I ended making a custom python3 script to explicity insert
 #	the compiling step
-
-
-#This make file was made by Osbaldo Gonzalez Jr.(spaceface102)
