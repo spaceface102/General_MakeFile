@@ -28,7 +28,7 @@ CC = g++
 CENTRAL_MAKEFILE_DIR =$(shell pwd)
 
 #have core_lflags and extra_lflags to make it easier to add extra_flags
-SHARED_C_AND_L_FLAGS = -std=c++11 -Werror -Wall -Wpedantic -Wshadow-compatible-local -fsanitize-address-use-after-scope
+SHARED_C_AND_L_FLAGS = -std=c++17 -Werror -Wall -Wpedantic -Wshadow-compatible-local -fsanitize-address-use-after-scope
 CORE_CFLAGS = $(SHARED_C_AND_L_FLAGS) -I $(HDRSDIR)
 CORE_LFLAGS = $(SHARED_C_AND_L_FLAGS)
 EXTRA_CFLAGS =
